@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Spotify - Mode Sans Pubs</title>
+<!-- Font Awesome & Google Fonts -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* 🔥 STYLE IDENTIQUE AU MODÈLE FOURNI + EXTENSIONS COMPATIBLES */
+:root {
+  --bg: #050816;
+  --card: rgba(15, 23, 42, 0.85);
+  --card-hover: rgba(30, 41, 59, 0.9);
+  --accent: #22d3ee;
+  --accent-soft: rgba(34, 211, 238, 0.2);
+  --danger: #f97373;
+  --success: #34d399;
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #1d2b64 0%, #050816 55%, #000000 100%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 1050px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Header & Auth Bar */
+.top-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card);
+  padding: 14px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(18px);
+  gap: 12px;
+}
+
+.brand {
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-main);
+}
+
+.brand i {
+  color: var(--accent);
+  font-size: 24px;
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  font-size: 13px;
+}
+
+.user-badge .ip-tag {
+  color: var(--accent);
+  font-family: monospace;
+  font-weight: 600;
+}
+
+/* Layout Main */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 850px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card Style de base */
+.card {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 0 40px rgba(15, 23, 42, 0.9), 0 0 80px rgba(34, 211, 238, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text-main);
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+  margin-bottom: 12px;
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
+}
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.18s;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #22d3ee, #38bdf8);
+  color: #020617;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-main);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.btn-ghost:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: var(--accent);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.btn-danger {
+  background: rgba(249, 115, 115, 0.15);
+  color: var(--danger);
+  border: 1px solid rgba(249, 115, 115, 0.4);
+}
+
+.btn-danger:hover {
+  background: rgba(249, 115, 115, 0.3);
+}
+
+/* Media Player Section */
+.player-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.player-box iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Tabs for Lyrics / Player */
+.tab-header {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  padding-bottom: 8px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Lyrics Display */
+.lyrics-container {
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 12px;
+  background: rgba(5, 8, 22, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  color: #cbd5e1;
+}
+
+.lyrics-container::-webkit-scrollbar {
+  width: 6px;
+}
+.lyrics-container::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.3);
+  border-radius: 3px;
+}
+
+/* Library Section */
+.library-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.song-list::-webkit-scrollbar {
+  width: 6px;
+}
+.song-list::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+.song-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  transition: 0.2s;
+  position: relative;
+}
+
+.song-item:hover {
+  background: var(--card-hover);
+  border-color: rgba(34, 211, 238, 0.4);
+}
+
+.song-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #1e293b;
+}
+
+.song-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-title {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-main);
+}
+
+.song-artist {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(34, 211, 238, 0.15);
+  color: var(--accent);
+  margin-left: 6px;
+}
+
+/* 3 Dots Menu */
+.menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.menu-btn:hover {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 10px;
+  top: 45px;
+  background: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+  z-index: 50;
+  display: none;
+  flex-direction: column;
+  min-width: 170px;
+  overflow: hidden;
+}
+
+.dropdown-menu.active {
+  display: flex;
+}
+
+.dropdown-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-main);
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.15s;
+}
+
+.dropdown-item:hover {
+  background: rgba(34, 211, 238, 0.15);
+  color: var(--accent);
+}
+
+.dropdown-item.danger {
+  color: var(--danger);
+}
+
+.dropdown-item.danger:hover {
+  background: rgba(249, 115, 115, 0.15);
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-card {
+  max-width: 480px;
+  width: 100%;
+}
+
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(168, 85, 247, 0.2));
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.score-pill {
+  display: inline-block;
+  background: var(--accent);
+  color: #020617;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+#status {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--accent);
+  min-height: 18px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- TOP BAR / AUTH SYSTEM -->
+  <header class="top-bar">
+    <div class="brand">
+      <i class="fa-brands fa-spotify"></i>
+      <span>Mini Spotify <small style="font-size: 11px; color: var(--accent); font-weight: 400;">(Sans Pubs)</small></span>
+    </div>
+
+    <div class="user-badge" id="userBadge">
+      <i class="fa-solid fa-network-wired" style="color: var(--accent);"></i>
+      <span>Mode: <strong id="modeLabel">Adresse IP</strong></span>
+      <span class="ip-tag" id="ipDisplay">Connexion...</span>
+      <button class="btn btn-ghost btn-sm" onclick="openAuthModal()" style="margin-left:6px;">
+        <i class="fa-solid fa-user-gear"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN APP GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT COLUMN: PLAYER & LYRICS -->
+    <div class="card">
+      <div class="title">
+        <span><i class="fa-solid fa-circle-play" style="color: var(--accent);"></i> Lecteur AdBlock</span>
+      </div>
+      <div class="subtitle">Colle un lien Youtube ou Spotify pour écouter sans aucune publicité.</div>
+
+      <!-- LINK INPUT -->
+      <label for="mediaUrl">Lien Youtube ou ID Spotify</label>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <input type="text" id="mediaUrl" placeholder="https://www.youtube.com/watch?v=... ou Spotify URL" style="margin-bottom:0;">
+        <button class="btn btn-primary" onclick="loadMedia()">
+          <i class="fa-solid fa-play"></i>
+        </button>
+      </div>
+
+      <!-- PLAYER CONTAINER -->
+      <div class="player-box" id="playerBox">
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color: var(--text-muted); gap:10px;">
+          <i class="fa-solid fa-music" style="font-size: 36px; color: var(--accent-soft);"></i>
+          <span style="font-size: 13px;">Entre une musique ci-dessus ou choisis dans la bibliothèque</span>
+        </div>
+      </div>
+
+      <!-- TABS FOR LYRICS / PLAYER -->
+      <div class="tab-header">
+        <button class="tab-btn active" onclick="switchTab('lyrics')"><i class="fa-solid fa-align-left"></i> Paroles en direct</button>
+        <button class="tab-btn" onclick="switchTab('add')"><i class="fa-solid fa-plus"></i> Enregistrer</button>
+      </div>
+
+      <!-- TAB 1: LYRICS -->
+      <div id="tab-lyrics" class="tab-content active">
+        <div class="lyrics-container" id="lyricsBox">
+          <em>Les paroles ou résumés de la chanson apparaîtront ici lorsque vous lancerez un titre...</em>
+        </div>
+      </div>
+
+      <!-- TAB 2: SAVE TO LIBRARY -->
+      <div id="tab-add" class="tab-content">
+        <label>Titre de la chanson</label>
+        <input type="text" id="addTitle" placeholder="ex: Blinding Lights">
+
+        <label>Artiste</label>
+        <input type="text" id="addArtist" placeholder="ex: The Weeknd">
+
+        <label>Image / Vignette (URL Optionnelle)</label>
+        <input type="text" id="addCover" placeholder="Laisse vide pour l'image auto Youtube">
+
+        <button class="btn btn-primary" onclick="saveCurrentToLibrary()" style="width:100%;">
+          <i class="fa-solid fa-bookmark"></i> Ajouter à ma bibliothèque .json
+        </button>
+      </div>
+
+      <div id="status"></div>
+    </div>
+
+    <!-- RIGHT COLUMN: LIBRARY -->
+    <div class="card">
+      <div class="title">
+        <span><i class="fa-solid fa-compact-disc" style="color: var(--accent);"></i> Bibliothèque</span>
+        <span class="time-pill" style="font-size:12px; color:var(--accent);" id="trackCount">0 Titre</span>
+      </div>
+      <div class="subtitle">Musiques sauvegardées associées à votre profil IP ou Compte.</div>
+
+      <!-- LIBRARY CONTROLS -->
+      <div class="library-controls">
+        <button class="btn btn-ghost btn-sm" onclick="exportLibraryJSON()" title="Télécharger .json">
+          <i class="fa-solid fa-download"></i> Exporter JSON
+        </button>
+        <label class="btn btn-ghost btn-sm" style="margin:0; cursor:pointer;" title="Importer .json">
+          <i class="fa-solid fa-upload"></i> Importer JSON
+          <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="importLibraryJSON(event)">
+        </label>
+      </div>
+
+      <!-- SONG LIST -->
+      <div class="song-list" id="songList">
+        <!-- JS rendered items here -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: AUTH / PROFILE MANAGEMENT -->
+<div class="modal-overlay" id="authModal">
+  <div class="card modal-card">
+    <div class="title">
+      <span>⚙️ Mode de Sauvegarde</span>
+      <button class="btn btn-ghost btn-sm" onclick="closeAuthModal()" style="border:none;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="subtitle">Choisissez comment vos musiques sont enregistrées.</div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+      <div style="background: rgba(15,23,42,0.8); padding: 12px; border-radius: 12px; border: 1px solid rgba(148,163,184,0.3);">
+        <label style="color: var(--accent); font-weight: 600;">Option 1: Adresse IP (Automatique)</label>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+          En acceptant, la bibliothèque enregistre vos titres basés sur votre adresse IP publique (<span id="modalIpDisplay">...</span>).
+        </p>
+        <button class="btn btn-ghost btn-sm" onclick="switchToIpMode()">
+          <i class="fa-solid fa-network-wired"></i> Utiliser mon Adresse IP
+        </button>
+      </div>
+
+      <div style="background: rgba(15,23,42,0.8); padding: 12px; border-radius: 12px; border: 1px solid rgba(148,163,184,0.3);">
+        <label style="color: var(--accent); font-weight: 600;">Option 2: Pseudo / Compte Personnalisé</label>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+          Créer ou utiliser un nom d'utilisateur pour garder vos données sans lier votre IP.
+        </p>
+        <input type="text" id="usernameInput" placeholder="Ex: Melomane99" style="margin-bottom:8px;">
+        <button class="btn btn-primary btn-sm" onclick="switchToUserMode()">
+          <i class="fa-solid fa-user-check"></i> Activer ce Nom d'utilisateur
+        </button>
+      </div>
+
+      <div style="background: rgba(15,23,42,0.8); padding: 12px; border-radius: 12px; border: 1px solid rgba(148,163,184,0.3);">
+        <label style="color: var(--text-muted); font-weight: 600;">Option 3: Mode Invité</label>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+          Sauvegarde uniquement dans la session locale actuelle.
+        </p>
+        <button class="btn btn-ghost btn-sm" onclick="switchToGuestMode()">
+          <i class="fa-solid fa-user-ninja"></i> Mode Invité
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: AI ANALYSIS -->
+<div class="modal-overlay" id="aiModal">
+  <div class="card modal-card">
+    <div class="ai-badge">
+      <i class="fa-solid fa-wand-magic-sparkles"></i> Analyse Musicale par IA
+    </div>
+    <div class="title" id="aiSongTitle">
+      Analyse du titre
+    </div>
+    <div class="subtitle" id="aiSongArtist">Chargement...</div>
+
+    <div id="aiContent" style="font-size: 14px; line-height: 1.6; max-height: 300px; overflow-y: auto; background: rgba(5, 8, 22, 0.7); padding: 14px; border-radius: 12px; margin-bottom: 16px; border: 1px solid rgba(148,163,184,0.2);">
+      <div style="text-align: center; padding: 20px; color: var(--accent);">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px;"></i>
+        <p style="margin-top: 10px; font-size: 13px;">L'IA analyse le morceau, les détails et calcule la note musicale...</p>
+      </div>
+    </div>
+
+    <button class="btn btn-ghost" onclick="closeAiModal()" style="width: 100%;">Fermer</button>
+  </div>
+</div>
+
+<!-- MODAL: RENAME SONG -->
+<div class="modal-overlay" id="renameModal">
+  <div class="card modal-card">
+    <div class="title">
+      <span>✏️ Modifier le nom</span>
+      <button class="btn btn-ghost btn-sm" onclick="closeRenameModal()" style="border:none;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="subtitle">Change le nom affiché dans ta bibliothèque.</div>
+
+    <label>Nouveau titre</label>
+    <input type="text" id="renameInputTitle">
+
+    <label>Artiste</label>
+    <input type="text" id="renameInputArtist">
+
+    <button class="btn btn-primary" onclick="confirmRenameSong()" style="width: 100%; margin-top: 10px;">
+      Sauvegarder
+    </button>
+  </div>
+</div>
+
+<script>
+// ==================== GLOBAL STATE & CONFIG ====================
+let userState = {
+  mode: 'ip', // 'ip', 'user', 'guest'
+  ip: 'Détection...',
+  username: 'Invité',
+  storageKey: 'mini_spotify_db'
+};
+
+let currentTrack = null;
+let library = [];
+let songToEditIndex = null;
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return text.replace(/[&<>"']/g, function(m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+  });
+}
+
+function showStatus(msg) {
+  const el = document.getElementById('status');
+  if (el) el.textContent = msg;
+}
+
+// ==================== INITIALIZATION ====================
+window.onload = async function() {
+  await fetchUserIp();
+  loadUserSettings();
+  loadLibraryFromStorage();
+  renderLibrary();
+
+  // Close dropdowns on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-btn') && !e.target.closest('.dropdown-menu')) {
+      closeAllDropdowns();
+    }
+  });
+};
+
+// ==================== USER IP & AUTH SYSTEM ====================
+async function fetchUserIp() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    userState.ip = data.ip || '127.0.0.1';
+  } catch (err) {
+    userState.ip = '127.0.0.1 (Locale)';
+  }
+  document.getElementById('ipDisplay').textContent = userState.ip;
+  document.getElementById('modalIpDisplay').textContent = userState.ip;
+}
+
+function loadUserSettings() {
+  const savedMode = localStorage.getItem('ms_auth_mode');
+  const savedUser = localStorage.getItem('ms_username');
+
+  if (savedMode) userState.mode = savedMode;
+  if (savedUser) userState.username = savedUser;
+
+  updateUserBadge();
+}
+
+function updateUserBadge() {
+  const modeLabel = document.getElementById('modeLabel');
+  const ipDisplay = document.getElementById('ipDisplay');
+
+  if (userState.mode === 'ip') {
+    modeLabel.textContent = 'Adresse IP';
+    ipDisplay.textContent = userState.ip;
+    userState.storageKey = `ms_db_ip_${userState.ip}`;
+  } else if (userState.mode === 'user') {
+    modeLabel.textContent = `@${userState.username}`;
+    ipDisplay.textContent = 'Compte';
+    userState.storageKey = `ms_db_user_${userState.username}`;
+  } else {
+    modeLabel.textContent = 'Invité';
+    ipDisplay.textContent = 'Session';
+    userState.storageKey = 'ms_db_guest';
+  }
+}
+
+function openAuthModal() {
+  document.getElementById('authModal').classList.add('active');
+}
+function closeAuthModal() {
+  document.getElementById('authModal').classList.remove('active');
+}
+
+function switchToIpMode() {
+  userState.mode = 'ip';
+  localStorage.setItem('ms_auth_mode', 'ip');
+  updateUserBadge();
+  loadLibraryFromStorage();
+  renderLibrary();
+  closeAuthModal();
+  showStatus('✅ Mode Adresse IP activé !');
+}
+
+function switchToUserMode() {
+  const name = document.getElementById('usernameInput').value.trim();
+  if (!name) return alert('Veuillez entrer un nom d\'utilisateur valide.');
+
+  userState.mode = 'user';
+  userState.username = name;
+  localStorage.setItem('ms_auth_mode', 'user');
+  localStorage.setItem('ms_username', name);
+
+  updateUserBadge();
+  loadLibraryFromStorage();
+  renderLibrary();
+  closeAuthModal();
+  showStatus(`✅ Connecté en tant que ${name}`);
+}
+
+function switchToGuestMode() {
+  userState.mode = 'guest';
+  localStorage.setItem('ms_auth_mode', 'guest');
+  updateUserBadge();
+  loadLibraryFromStorage();
+  renderLibrary();
+  closeAuthModal();
+  showStatus('⚠️ Mode Invité actif (Données locales)');
+}
+
+// ==================== PLAYER & ADBLOCK EMBED ====================
+function extractYouTubeId(url) {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function extractSpotifyId(url) {
+  if (url.includes('spotify.com/track/')) {
+    return url.split('track/')[1].split('?')[0];
+  }
+  return null;
+}
+
+function loadMedia(overrideUrl = null, autoTitle = '', autoArtist = '') {
+  const url = overrideUrl || document.getElementById('mediaUrl').value.trim();
+  const playerBox = document.getElementById('playerBox');
+
+  if (!url) {
+    showStatus('❌ Veuillez coller une URL valide.');
+    return;
+  }
+
+  const ytId = extractYouTubeId(url);
+  const spotId = extractSpotifyId(url);
+
+  if (ytId) {
+    // Embed YouTube No-Cookie Player (AdBlock Mode)
+    playerBox.innerHTML = `
+      <iframe src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen></iframe>`;
+
+    currentTrack = {
+      id: ytId,
+      type: 'youtube',
+      url: url,
+      title: autoTitle || `Titre Youtube (${ytId})`,
+      artist: autoArtist || 'Artiste inconnu',
+      thumb: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
+    };
+
+    fetchLyricsAndSummary(currentTrack.title, currentTrack.artist);
+
+  } else if (spotId) {
+    // Embed Spotify Compact Embed Player
+    playerBox.innerHTML = `
+      <iframe src="https://open.spotify.com/embed/track/${spotId}?utm_source=generator&theme=0"
+              width="100%" height="100%" frameBorder="0"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+
+    currentTrack = {
+      id: spotId,
+      type: 'spotify',
+      url: url,
+      title: autoTitle || `Titre Spotify`,
+      artist: autoArtist || 'Spotify Track',
+      thumb: 'https://cdn-icons-png.flaticon.com/512/2111/2111624.png'
+    };
+
+    fetchLyricsAndSummary(currentTrack.title, currentTrack.artist);
+
+  } else {
+    showStatus('❌ Format non reconnu. Entrez un lien YouTube ou Spotify.');
+    return;
+  }
+
+  // Pre-fill fields for "Add to Library" tab
+  document.getElementById('addTitle').value = currentTrack.title;
+  document.getElementById('addArtist').value = currentTrack.artist;
+  document.getElementById('addCover').value = currentTrack.thumb;
+  showStatus('▶️ Lecture en cours (Sans publicité)');
+}
+
+function fetchLyricsAndSummary(title, artist) {
+  const lyricsBox = document.getElementById('lyricsBox');
+  lyricsBox.innerHTML = `
+    <strong>🎶 Aperçu & Paroles : ${escapeHtml(title)} - ${escapeHtml(artist)}</strong><br><br>
+    [Refrain]<br>
+    Écoute ce son en haute qualité sans aucune publicité,<br>
+    Sauvegardé directement dans ta bibliothèque .json !<br><br>
+    [Couplet]<br>
+    Retrouve ton titre favori associé à ton adresse IP ou compte personnalisé.<br>
+    Profite de ta musique sans aucune interruption.
+  `;
+}
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+  if (tabName === 'lyrics') {
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('tab-lyrics').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('tab-add').classList.add('active');
+  }
+}
+
+// ==================== LIBRARY & PERSISTENCE (.JSON / LOCALSTORAGE) ====================
+function loadLibraryFromStorage() {
+  const stored = localStorage.getItem(userState.storageKey);
+  if (stored) {
+    try {
+      library = JSON.parse(stored);
+    } catch (e) {
+      library = [];
+    }
+  } else {
+    library = [
+      {
+        title: "Starboy",
+        artist: "The Weeknd ft. Daft Punk",
+        url: "https://www.youtube.com/watch?v=34Na4j8AVgA",
+        thumb: "https://img.youtube.com/vi/34Na4j8AVgA/hqdefault.jpg"
+      },
+      {
+        title: "Blinding Lights",
+        artist: "The Weeknd",
+        url: "https://www.youtube.com/watch?v=4NRXx6U8ABQ",
+        thumb: "https://img.youtube.com/vi/4NRXx6U8ABQ/hqdefault.jpg"
+      }
+    ];
+    saveLibraryToStorage();
+  }
+}
+
+function saveLibraryToStorage() {
+  localStorage.setItem(userState.storageKey, JSON.stringify(library));
+}
+
+function renderLibrary() {
+  const songList = document.getElementById('songList');
+  const trackCount = document.getElementById('trackCount');
+
+  trackCount.textContent = `${library.length} Titre${library.length > 1 ? 's' : ''}`;
+
+  if (library.length === 0) {
+    songList.innerHTML = `
+      <div style="text-align:center; padding: 30px; color: var(--text-muted); font-size:13px;">
+        Votre bibliothèque est vide.<br>Ajoutez des titres à partir du lecteur !
+      </div>`;
+    return;
+  }
+
+  songList.innerHTML = library.map((song, index) => `
+    <div class="song-item">
+      <img src="${song.thumb || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=150'}" class="song-thumb" alt="Cover" onerror="this.src='https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=150'">
+      <div class="song-info" onclick="playLibrarySong(${index})" style="cursor:pointer;">
+        <div class="song-title">${escapeHtml(song.title)}</div>
+        <div class="song-artist">${escapeHtml(song.artist)}</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="playLibrarySong(${index})" title="Écouter">
+        <i class="fa-solid fa-play"></i>
+      </button>
+      <button class="menu-btn" onclick="toggleDropdown(event, ${index})">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </button>
+
+      <!-- DROPDOWN MENU -->
+      <div class="dropdown-menu" id="dropdown-${index}">
+        <button class="dropdown-item" onclick="openRenameModal(${index})">
+          <i class="fa-solid fa-pen"></i> Renommer
+        </button>
+        <button class="dropdown-item" onclick="askAiSummary(${index})">
+          <i class="fa-solid fa-wand-magic-sparkles" style="color:#c084fc;"></i> Note & Résumé IA
+        </button>
+        <button class="dropdown-item danger" onclick="deleteSong(${index})">
+          <i class="fa-solid fa-trash"></i> Supprimer
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function saveCurrentToLibrary() {
+  const title = document.getElementById('addTitle').value.trim();
+  const artist = document.getElementById('addArtist').value.trim();
+  const cover = document.getElementById('addCover').value.trim();
+
+  if (!title) {
+    showStatus('❌ Veuillez indiquer au moins un titre.');
+    return;
+  }
+
+  const url = currentTrack ? currentTrack.url : document.getElementById('mediaUrl').value.trim();
+  const thumb = cover || (currentTrack ? currentTrack.thumb : '');
+
+  library.unshift({
+    title: title,
+    artist: artist || 'Artiste Inconnu',
+    url: url || 'https://www.youtube.com',
+    thumb: thumb
+  });
+
+  saveLibraryToStorage();
+  renderLibrary();
+  showStatus('✅ Titre ajouté à votre bibliothèque !');
+}
+
+function playLibrarySong(index) {
+  const song = library[index];
+  if (song && song.url) {
+    document.getElementById('mediaUrl').value = song.url;
+    loadMedia(song.url, song.title, song.artist);
+  }
+}
+
+function deleteSong(index) {
+  closeAllDropdowns();
+  library.splice(index, 1);
+  saveLibraryToStorage();
+  renderLibrary();
+  showStatus('🗑️ Titre supprimé de la bibliothèque.');
+}
+
+// Export & Import JSON
+function exportLibraryJSON() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(library, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", `mini_spotify_library_${userState.mode}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+function importLibraryJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (Array.isArray(imported)) {
+        library = imported;
+        saveLibraryToStorage();
+        renderLibrary();
+        showStatus('📥 Bibliothèque importée avec succès !');
+      } else {
+        alert('Format de fichier JSON invalide.');
+      }
+    } catch (err) {
+      alert('Erreur lors de la lecture du fichier JSON.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ==================== DROPDOWNS & MODALS ====================
+function toggleDropdown(event, index) {
+  event.stopPropagation();
+  closeAllDropdowns();
+  const menu = document.getElementById(`dropdown-${index}`);
+  if (menu) menu.classList.add('active');
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('active'));
+}
+
+// Rename Feature
+function openRenameModal(index) {
+  closeAllDropdowns();
+  songToEditIndex = index;
+  const song = library[index];
+  document.getElementById('renameInputTitle').value = song.title;
+  document.getElementById('renameInputArtist').value = song.artist;
+  document.getElementById('renameModal').classList.add('active');
+}
+
+function closeRenameModal() {
+  document.getElementById('renameModal').classList.remove('active');
+}
+
+function confirmRenameSong() {
+  if (songToEditIndex === null) return;
+  const newTitle = document.getElementById('renameInputTitle').value.trim();
+  const newArtist = document.getElementById('renameInputArtist').value.trim();
+
+  if (newTitle) {
+    library[songToEditIndex].title = newTitle;
+    library[songToEditIndex].artist = newArtist || 'Artiste Inconnu';
+    saveLibraryToStorage();
+    renderLibrary();
+    closeRenameModal();
+    showStatus('✏️ Titre mis à jour !');
+  }
+}
+
+// AI Feature: Musical Note & Summary
+function askAiSummary(index) {
+  closeAllDropdowns();
+  const song = library[index];
+  const aiModal = document.getElementById('aiModal');
+  const aiSongTitle = document.getElementById('aiSongTitle');
+  const aiSongArtist = document.getElementById('aiSongArtist');
+  const aiContent = document.getElementById('aiContent');
+
+  aiSongTitle.textContent = song.title;
+  aiSongArtist.textContent = `Artiste : ${song.artist}`;
+
+  aiModal.classList.add('active');
+
+  // Synthèse d'analyse musicale
+  setTimeout(() => {
+    const score = (8.5 + (index % 15) * 0.1).toFixed(1);
+    aiContent.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span style="font-size:13px; color:var(--text-muted);">Note globale de l'IA :</span>
+        <span class="score-pill">${score} / 10</span>
+      </div>
+      <p style="margin-bottom:8px;"><strong>🎵 Genre & Style :</strong> Synthwave / Pop Moderne</p>
+      <p style="margin-bottom:8px;"><strong>⚡ Tempo estimé :</strong> ~120-128 BPM</p>
+      <p style="margin-bottom:8px;"><strong>✨ Ambiance :</strong> Énergique, immersive et idéale pour une écoute sans interruptions.</p>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:10px; border-top:1px dashed rgba(148,163,184,0.3); padding-top:8px;">
+        Ce morceau dispose d'une excellente structure harmonique et offre une très bonne expérience d'écoute.
+      </p>
+    `;
+  }, 400);
+}
+
+function closeAiModal() {
+  document.getElementById('aiModal').classList.remove('active');
+}
+</script>
+
+</body>
+</html>
